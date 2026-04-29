@@ -7,9 +7,16 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../hub-auth-client"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^3.1",
+        "bevi-webdev-jm/hub-auth-client": "@dev",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2",
         "jeroennoten/laravel-adminlte": "^3.14",

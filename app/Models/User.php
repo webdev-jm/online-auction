@@ -28,6 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'google_id',
+        'hub_user_id',
         'accepts_terms_and_conditions',
     ];
 
