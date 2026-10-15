@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+use App\Services\AuctionSettings;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AuctionWinnerNotification extends Notification
@@ -45,11 +46,16 @@ class AuctionWinnerNotification extends Notification
 
         $filename = 'auction-' . $this->auction->auction_code . '-' . time() . '.pdf';
 
+        $settings = app(AuctionSettings::class);
+        $dueAt = $this->auction->auction_winner?->payment_due_at;
+
         return (new MailMessage)
             ->from('notify@bevi.ph', 'ONLINE AUCTION')
             ->subject('🎉 Congratulations! You Won the Auction')
             ->greeting('Hi ' . $notifiable->name . ',')
             ->line('We’re excited to inform you that you’ve successfully won the auction with the code: **' . $this->auction->auction_code . '**.')
+            ->line('Please pay by ' . ($dueAt ? $dueAt->format('M j, Y g:i A') : 'the date given by the auction team') . '. Accepted payment: ' . $settings->get('payment_methods') . '.')
+            ->line('After payment, pick up the item at ' . $settings->get('pickup_location') . '.')
             ->line('Attached is a summary of your winning bid. You can also view more details by clicking the button below.')
             ->action('View Auction Details', url('/bidding/' . encrypt($this->auction->id)))
             ->line('Thank you for participating in the auction, and congratulations again on your successful bid!')

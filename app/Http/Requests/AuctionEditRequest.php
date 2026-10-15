@@ -2,11 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Item;
-use App\Models\Company;
-
-class AuctionEditRequest extends FormRequest
+class AuctionEditRequest extends AuctionAddRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,62 +13,15 @@ class AuctionEditRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Same rules as a new auction, except an existing auction may have started in the past.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
-            'item_id' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    try {
-                        $decryptedId = decrypt($value); // Decrypt the company_id
-    
-                        if (!Item::where('id', $decryptedId)->exists()) {
-                            $fail('The selected item is invalid.');
-                        }
-                    } catch (\Exception $e) {
-                        $fail('Invalid item ID.');
-                    }
-                }
-            ],
-            'company_id' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    try {
-                        $decryptedId = decrypt($value); // Decrypt the company_id
-    
-                        if (!Company::where('id', $decryptedId)->exists()) {
-                            $fail('The selected company is invalid.');
-                        }
-                    } catch (\Exception $e) {
-                        $fail('Invalid company ID.');
-                    }
-                }
-            ],
-            'start' => [
-                'required',
-                'date',
-            ],
-            'start_time' => [
-                'required',
-            ],
-            'end' => [
-                'required',
-                'date',
-                'after_or_equal:start' // Ensures end date is after start date
-            ],
-            'end_time' => [
-                'required',
-            ],
-            'min_bid' => [
-                'required'
-            ],
-            'bid_limit' => [
-                'required_if:user_bidding_limit,1'
-            ]
-        ];
+        $rules = parent::rules();
+        $rules['start'] = ['required', 'date'];
+
+        return $rules;
     }
 }

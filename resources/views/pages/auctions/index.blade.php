@@ -1,120 +1,116 @@
 @extends('layouts.app')
 
 {{-- Customize layout sections --}}
-@section('subtitle', 'AUCTION LIST')
-@section('content_header_title', 'AUCTIONS')
-@section('content_header_subtitle', 'AUCTION LIST')
+@section('subtitle', 'Auctions')
 
 {{-- Content body: main page content --}}
 @section('content_body')
-    <div class="card">
-        <div class="card-header py-2">
-            <div class="row">
-                <div class="col-lg-6 align-middle">
-                    <strong class="text-lg">AUCTION LIST</strong>
-                </div>
-                <div class="col-lg-6 text-right">
-                    @can('auction create')
-                        <a href="{{route('auction.create')}}" class="btn btn-primary btn-xs">
-                            <i class="fa fa-file"></i>
-                            NEW AUCTION
-                        </a>
-                    @endcan
-                </div>
-            </div>
+<div class="pt-3">
+    <div class="oa-page-head">
+        <div>
+            <span class="oa-eyebrow">Manage</span>
+            <h2>Auctions</h2>
+            <p>Every auction, newest first.</p>
         </div>
-        <div class="card-body">
-
-            {{ html()->form('GET', route('auction.index'))->open() }}
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ html()->label('Search', 'search')->class(['mb-0']) }}
-                            {{ html()->text('search', $search)->class(['form-control', 'form-control-sm'])->placeholder('Search') }}
-                        </div>
-                    </div>
+        <div class="oa-toolbar">
+            {{ html()->form('GET', route('auction.index'))->class('d-flex')->open() }}
+                @if($status)
+                    <input type="hidden" name="status" value="{{ $status }}">
+                @endif
+                <div class="input-group input-group-sm" style="width: min(260px, 100%)">
+                    <div class="input-group-prepend"><span class="input-group-text bg-transparent"><i class="fas fa-search"></i></span></div>
+                    {{ html()->search('search', $search)->class('form-control')->placeholder('Code, item, brand, specs or date')->attribute('aria-label', 'Search auctions') }}
                 </div>
             {{ html()->form()->close() }}
-
-            <div class="row">
-                <div class="col-12 table-responsive p-1 bg-gray rounded">
-                    <table class="table table-sm table-striped table-hover bg-white mb-0">
-                        <thead class="text-center bg-dark">
-                            <tr class="text-center">
-                                <th>AUCTION CODE</th>
-                                <th>ITEM</th>
-                                <th>START</th>
-                                <th>END</th>
-                                <th>MIN BID</th>
-                                <th>STATUS</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($auctions as $auction)
-                                <tr>
-                                    <td class="align-middle text-center">
-                                        {{$auction->auction_code}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        [{{$auction->item->item_number}}] {{$auction->item->name}}
-                                    </td> 
-                                    <td class="align-middle text-center">
-                                        {{$auction->start}} {{$auction->start_time}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{$auction->end}} {{$auction->end_time}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{number_format($auction->min_bid, 2)}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        @if(!empty($auction->auction_winner))
-                                            SOLD
-                                        @else
-                                            {{$auction->status ?? '-'}}
-                                        @endif
-                                    </td>
-                                    <td class="align-middle text-right p-0 pr-1">
-                                        <a href="{{route('auction.show', encrypt($auction->id, 'auctions'))}}" class="btn btn-info btn-xs mb-0 ml-0">
-                                            <i class="fa fa-list"></i>
-                                            VIEW
-                                        </a>
-                                        @if($auction->status != 'ENDED')
-                                            @can('auction edit')
-                                                <a href="{{route('auction.edit', encrypt($auction->id, 'auctions'))}}" class="btn btn-success btn-xs mb-0 ml-0">
-                                                    <i class="fa fa-pen-alt"></i>
-                                                    EDIT
-                                                </a>
-                                            @endcan
-
-                                            @can('auction delete')
-                                                <a href="#" class="btn btn-danger btn-xs mb-0 ml-0 btn-delete" data-id="{{encrypt($auction->id)}}">
-                                                    <i class="fa fa-trash-alt"></i>
-                                                    DELETE
-                                                </a>
-                                            @endcan
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-        <div class="card-footer">
-            {{$auctions->links()}}
+            @can('auction create')
+                <a href="{{ route('auction.create') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i> New auction</a>
+            @endcan
         </div>
     </div>
-@stop
 
-{{-- Push extra CSS --}}
-@push('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
+    <nav class="oa-tabs mb-3" aria-label="Filter by status">
+        @foreach(['' => 'All', 'OPEN' => 'Open', 'UPCOMING' => 'Upcoming', 'ENDED' => 'Ended'] as $value => $label)
+            <a href="{{ route('auction.index', array_filter(['status' => $value, 'search' => $search])) }}"
+               class="{{ ($status ?? '') === $value ? 'is-active' : '' }}">{{ $label }}</a>
+        @endforeach
+    </nav>
+
+    <div class="card">
+        <div class="card-body p-0 table-responsive">
+            @if($auctions->isEmpty())
+                <div class="oa-empty">
+                    <i class="fas fa-gavel"></i>
+                    @if($search || $status)
+                        <strong>No auctions match these filters</strong>
+                        <a href="{{ route('auction.index') }}">Clear filters</a>
+                    @else
+                        <strong>No auctions yet</strong>
+                        @can('auction create')
+                            <a href="{{ route('auction.create') }}">Create the first auction</a>
+                        @endcan
+                    @endif
+                </div>
+            @else
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Item</th>
+                            <th>Opens</th>
+                            <th>Closes</th>
+                            <th class="text-right">Min bid</th>
+                            <th class="text-right">Bids</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($auctions as $auction)
+                            @php($currentStatus = $auction->currentStatus())
+                            <tr>
+                                <td class="oa-num font-weight-bold">{{ $auction->auction_code }}</td>
+                                <td>
+                                    {{ $auction->item?->name }}
+                                    <span class="d-block text-muted small">{{ $auction->item?->item_number }}</span>
+                                </td>
+                                <td class="text-nowrap">{{ $auction->startsAt()->format('M j, Y g:i A') }}</td>
+                                <td class="text-nowrap">{{ $auction->endsAt()->format('M j, Y g:i A') }}</td>
+                                <td class="text-right oa-num">{{ number_format((float) $auction->min_bid, 2) }}</td>
+                                <td class="text-right oa-num">{{ $auction->biddings_count }}</td>
+                                <td>
+                                    @if($auction->auction_winner && $auction->auction_winner->status !== \App\Models\AuctionWinner::STATUS_FORFEITED)
+                                        <span class="oa-pill is-{{ $auction->auction_winner->status }}">{{ $auction->auction_winner->statusLabel() }}</span>
+                                    @else
+                                        <span class="oa-pill is-{{ strtolower($currentStatus) }}">{{ ucfirst(strtolower($currentStatus)) }}</span>
+                                    @endif
+                                </td>
+                                <td class="text-right text-nowrap">
+                                    <a href="{{ route('auction.show', encrypt($auction->id)) }}" class="btn btn-outline-secondary btn-xs">View</a>
+                                    @if($currentStatus !== \App\Models\Auction::STATUS_ENDED)
+                                        @can('auction edit')
+                                            <a href="{{ route('auction.edit', encrypt($auction->id)) }}" class="btn btn-outline-secondary btn-xs">Edit</a>
+                                        @endcan
+                                        @can('auction delete')
+                                            <a href="#" class="btn btn-outline-secondary btn-xs text-danger btn-delete" data-id="{{ encrypt($auction->id) }}" aria-label="Delete {{ $auction->auction_code }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        @endcan
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+        @if($auctions->hasPages())
+            <div class="card-footer">
+                {{ $auctions->links() }}
+            </div>
+        @endif
+    </div>
+</div>
+@stop
 
 {{-- Push extra scripts --}}
 @push('js')

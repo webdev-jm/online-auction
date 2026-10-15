@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Bidding extends Model
@@ -17,11 +18,13 @@ class Bidding extends Model
         'bid_amount'
     ];
 
-    public function auction() {
-        return $this->belongsTo('App\Models\Auction');
+    public function auction(): BelongsTo
+    {
+        return $this->belongsTo(Auction::class);
     }
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

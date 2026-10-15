@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Online Auction — Developer Documentation</title>
+<style>
+:root {
+    --bg: #ffffff; --panel: #f6f7f9; --text: #1c2430; --muted: #5b6676; --line: #dfe3e8;
+    --accent: #1f5fbf; --code-bg: #f1f3f6; --note-bg: #fff8e1; --note-line: #e0a800;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #14181d; --panel: #1b2027; --text: #dde3ea; --muted: #94a0ae; --line: #2c343e;
+        --accent: #6fa8ff; --code-bg: #20262e; --note-bg: #2a2512; --note-line: #b98c00;
+    }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.65 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+.layout { display: flex; min-height: 100vh; }
+nav.sidebar {
+    width: 300px; flex: 0 0 300px; background: var(--panel); border-right: 1px solid var(--line);
+    position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 20px 16px 40px;
+}
+nav.sidebar .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.sidebar .meta { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+nav.sidebar input {
+    width: 100%; padding: 7px 10px; margin-bottom: 12px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; font-size: 13px;
+}
+nav.sidebar ul { list-style: none; margin: 0; padding: 0; }
+nav.sidebar > ul > li { margin-bottom: 6px; }
+nav.sidebar > ul > li > a { font-weight: 600; font-size: 13.5px; }
+nav.sidebar ul ul { padding-left: 12px; border-left: 1px solid var(--line); margin: 2px 0 6px 4px; }
+nav.sidebar ul ul a { font-size: 12.5px; color: var(--muted); }
+nav.sidebar a { display: block; padding: 2px 6px; border-radius: 4px; color: var(--text); text-decoration: none; }
+nav.sidebar a:hover { background: var(--line); color: var(--accent); }
+main { flex: 1 1 auto; min-width: 0; padding: 32px 48px 96px; max-width: 1040px; }
+h1 { font-size: 30px; line-height: 1.25; margin: 0 0 8px; }
+h2 { font-size: 22px; margin: 48px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--line); }
+h3 { font-size: 17px; margin: 30px 0 8px; }
+h4 { font-size: 15px; margin: 22px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+a { color: var(--accent); }
+a.anchor { margin-left: 8px; text-decoration: none; opacity: 0; font-weight: 400; }
+h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor { opacity: .6; }
+p, ul, ol { margin: 0 0 14px; }
+li { margin-bottom: 4px; }
+code {
+    font: 13px/1.5 Consolas, "Cascadia Mono", Menlo, monospace; background: var(--code-bg);
+    padding: 1px 5px; border-radius: 4px; word-break: break-word;
+}
+pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 14px; overflow-x: auto; margin: 0 0 16px;
+}
+pre code { background: none; padding: 0; word-break: normal; }
+.table-wrap { overflow-x: auto; margin: 0 0 18px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: var(--panel); white-space: nowrap; }
+blockquote {
+    margin: 0 0 16px; padding: 10px 14px; background: var(--note-bg);
+    border-left: 4px solid var(--note-line); border-radius: 0 6px 6px 0;
+}
+blockquote p:last-child { margin-bottom: 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+.menu-toggle { display: none; }
+@media (max-width: 900px) {
+    .layout { display: block; }
+    nav.sidebar { position: static; width: auto; height: auto; max-height: 60vh; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 20px 16px 64px; }
+}
+@media print {
+    nav.sidebar { display: none; }
+    main { max-width: none; padding: 0; }
+    a.anchor { display: none; }
+    h2 { page-break-after: avoid; }
+    pre, table { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+    <div class="brand">Online Auction — Developer Documentation</div>
+    <div class="meta">Developer documentation &middot; generated October 14, 2026</div>
+    <input type="search" id="toc-filter" placeholder="Filter sections..." aria-label="Filter sections">
+    <ul id="toc">
+<li><a href="#1-system-overview">1. System overview</a><ul><li><a href="#what-the-system-does">What the system does</a></li><li><a href="#vocabulary">Vocabulary</a></li><li><a href="#technology-stack">Technology stack</a></li><li><a href="#repository-facts">Repository facts</a></li></ul></li>
+<li><a href="#2-getting-started">2. Getting started</a><ul><li><a href="#environment-variables">Environment variables</a></li></ul></li>
+<li><a href="#3-architecture">3. Architecture</a><ul><li><a href="#directory-guide">Directory guide</a></li><li><a href="#data-model">Data model</a></li><li><a href="#routes-and-permissions">Routes and permissions</a></li></ul></li>
+<li><a href="#4-how-an-auction-runs">4. How an auction runs</a><ul><li><a href="#setting-up">Setting up</a></li><li><a href="#status">Status</a></li><li><a href="#bidding">Bidding</a></li><li><a href="#winner">Winner</a></li></ul></li>
+<li><a href="#5-weak-points-to-fix-before-the-next-auction">5. Weak points to fix before the next auction</a><ul></ul></li>
+<li><a href="#6-maintenance-procedures">6. Maintenance procedures</a><ul><li><a href="#adding-an-auction-option">Adding an auction option</a></li><li><a href="#item-upload-format">Item upload format</a></li><li><a href="#assets">Assets</a></li></ul></li>
+<li><a href="#7-deployment">7. Deployment</a><ul></ul></li>
+<li><a href="#8-troubleshooting">8. Troubleshooting</a><ul></ul></li>
+<li><a href="#9-handover-checklist">9. Handover checklist</a><ul></ul></li>
+
+    </ul>
+</nav>
+<main>
+<h1>Online Auction — Developer Documentation</h1>
+<p>This document is for developers who maintain the Online Auction system or who are taking the source code over. It explains what the system does, how an auction runs from start to winner, how the code is organised, and what must be fixed before the next auction. It describes the <code>main</code> branch as of its last change in May 2026.</p>
+<blockquote>
+<p><strong>Keep this document private.</strong> The folder ships with an <code>.htaccess</code> that only allows requests from the local machine.</p>
+</blockquote>
+<h2 id="1-system-overview">1. System overview<a href="#1-system-overview" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<h3 id="what-the-system-does">What the system does<a href="#what-the-system-does" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p>The system runs internal auctions of company assets, such as used laptops, phones and equipment, to employees. An administrator lists the items and opens an auction for each one over a period of time. Employees place bids. When the period ends, the highest bid wins, the administrator prints the result and the winner is notified.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Items</td>
+<td>Items with pictures and specifications; Excel upload of many items.</td>
+</tr>
+<tr>
+<td>Auctions</td>
+<td>One auction per item: start and end date and time, minimum bid, visibility options.</td>
+</tr>
+<tr>
+<td>Bidding</td>
+<td>Employees accept the terms, place bids and see their own bids.</td>
+</tr>
+<tr>
+<td>Results</td>
+<td>The winner is determined when the auction ends; Excel export, PDF print, winner notification.</td>
+</tr>
+<tr>
+<td>QR codes</td>
+<td>A page that generates a QR code for a link, for posters.</td>
+</tr>
+<tr>
+<td>Administration</td>
+<td>Companies, users, roles, activity log.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Production host: <code>online-auction.bevi.ph</code>.</p>
+<h3 id="vocabulary">Vocabulary<a href="#vocabulary" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning in this code base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Item</td>
+<td>The thing sold. <code>items</code>, with <code>item_pictures</code> and <code>item_specifications</code>.</td>
+</tr>
+<tr>
+<td>Auction</td>
+<td>The sale of one item over a period. <code>auctions</code>, identified by <code>auction_code</code>.</td>
+</tr>
+<tr>
+<td>Bidding</td>
+<td>One bid by one user. <code>biddings</code>.</td>
+</tr>
+<tr>
+<td>Auction winner</td>
+<td>The winning bid of an auction. <code>auction_winners</code>.</td>
+</tr>
+<tr>
+<td>Bid limit</td>
+<td>The maximum number of bids one user may place in an auction. Empty means no limit.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="technology-stack">Technology stack<a href="#technology-stack" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What is used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language and framework</td>
+<td>PHP 8.1+, Laravel 10</td>
+</tr>
+<tr>
+<td>Interactive UI</td>
+<td>Livewire 3 (class-based), Blade</td>
+</tr>
+<tr>
+<td>Admin theme</td>
+<td><code>jeroennoten/laravel-adminlte</code> 3</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td><code>laravel/ui</code> session login <strong>with self-registration</strong>, Google sign-in; the Hub client package is installed but its login button was removed</td>
+</tr>
+<tr>
+<td>Authorisation</td>
+<td><code>spatie/laravel-permission</code> 6</td>
+</tr>
+<tr>
+<td>Audit trail</td>
+<td><code>spatie/laravel-activitylog</code> 4</td>
+</tr>
+<tr>
+<td>Excel and PDF</td>
+<td><code>maatwebsite/excel</code>, <code>phpoffice/phpspreadsheet</code>, <code>barryvdh/laravel-dompdf</code></td>
+</tr>
+<tr>
+<td>Images and codes</td>
+<td><code>intervention/image</code> 2, <code>milon/barcode</code></td>
+</tr>
+<tr>
+<td>Asset build</td>
+<td>Vite 5</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>PHPUnit 10 (only the two example tests)</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>MySQL</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="repository-facts">Repository facts<a href="#repository-facts" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remote</td>
+<td><code>https://github.com/webdev-jm/online-auction.git</code></td>
+</tr>
+<tr>
+<td>Default branch</td>
+<td><code>main</code></td>
+</tr>
+<tr>
+<td>History</td>
+<td>First commit February 24, 2025; last change May 4, 2026; about 90 commits</td>
+</tr>
+<tr>
+<td>Production path</td>
+<td><code>/home/kojiesanadmin/public_html/online-auction.bevi.ph</code></td>
+</tr>
+<tr>
+<td>Related files</td>
+<td><code>2025/PROJECT-DOCS/AUCTION DOCS/ITEMS UPLOAD.xlsx</code> on the original developer's machine is a sample item upload</td>
+</tr>
+</tbody>
+</table></div>
+<p>An older working copy and an <code>auction-starter</code> skeleton exist under <code>2025/PROJECT-DOCS</code>. The copy under <code>2026/PROJECTS</code> is the current one. The root <code>README.md</code> is the stock Laravel README.</p>
+<h2 id="2-getting-started">2. Getting started<a href="#2-getting-started" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<p><code>composer.json</code> declares a path repository at <code>../hub-auth-client</code>. Clone that package into a sibling folder first, or Composer fails.</p>
+<pre><code class="language-bash">git clone https://github.com/webdev-jm/online-auction.git
+cd online-auction
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+npm run build
+php artisan serve
+</code></pre>
+<p>The seeders create permissions, the roles <code>superadmin</code> and <code>user</code>, a first user and companies. Nothing runs in the background: no queue worker and no scheduler are needed.</p>
+<h3 id="environment-variables">Environment variables<a href="#environment-variables" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DB_*</code></td>
+<td>Application database.</td>
+</tr>
+<tr>
+<td><code>MAIL_*</code></td>
+<td>Bid confirmations and winner notifications are sent by e-mail.</td>
+</tr>
+<tr>
+<td><code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, <code>GOOGLE_REDIRECT_URI</code></td>
+<td>Google sign-in.</td>
+</tr>
+<tr>
+<td><code>HUB_*</code></td>
+<td>Read by <code>config/hub-auth.php</code>. The Hub login was removed from the login page in May 2026, so these are currently unused.</td>
+</tr>
+<tr>
+<td><code>config/app.php</code> <code>timezone</code></td>
+<td>Set to <code>Asia/Manila</code> in the file. <strong>Auction start and end are compared with the application clock</strong>, so do not change it without reason.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-architecture">3. Architecture<a href="#3-architecture" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<h3 id="directory-guide">Directory guide<a href="#directory-guide" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<pre><code>app/
+  Exports/AuctionExport.php        bids of an auction to Excel
+  Imports/ItemsImport.php          item upload
+  Helpers/GetModelRelationship.php
+  Http/Controllers/
+    AuctionController      auctions, export, print, winner notification
+    BiddingController      bidding page, bid list, &quot;my bids&quot;
+    ItemController         items and upload page
+    CompanyController, UserController, RoleController, SystemLogController, HomeController
+    Auth/                  login, registration, Google sign-in
+  Http/Requests/           AuctionAddRequest, AuctionEditRequest, and the usual Add and Edit requests
+  Livewire/
+    Auctions/Tab.php       status, countdown and winner of one auction
+    Biddings/Bid.php       the bid form
+    Items/Form.php, Items/Upload.php
+    Users/Bids.php         a user's bidding history
+    TermsAgreement.php     accept or decline the auction terms
+    QrGenerator.php
+    Roles/Users.php, DeleteModel.php
+  Models/                  Auction, AuctionWinner, Bidding, Item, ItemPicture, ItemSpecification, Company, User
+  Notifications/           BidNotification, AuctionWinnerNotification
+public/uploads/            item pictures
+resources/views/pages/{module}, resources/views/livewire
+</code></pre>
+<h3 id="data-model">Data model<a href="#data-model" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<pre><code>companies 1──* users 1──* biddings *──1 auctions *──1 items 1──* item_pictures
+                                          │                   └──* item_specifications
+                                          └──1 auction_winners ──1 biddings
+</code></pre>
+<p><code>auctions</code> columns: <code>item_id</code>, <code>company_id</code>, <code>auction_code</code>, <code>status</code>, <code>start</code>, <code>start_time</code>, <code>end</code>, <code>end_time</code>, <code>min_bid</code>, <code>bid_limit</code>, <code>show_bidders</code>, <code>show_leading_bidder</code>, <code>show_last_place_bidder</code>, <code>restrict_to_company_only</code>.</p>
+<h3 id="routes-and-permissions">Routes and permissions<a href="#routes-and-permissions" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Routes</th>
+<th>Permissions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bidding</td>
+<td><code>/bidding/{id}</code>, <code>/bidding/{id}/list</code>, <code>/my-bid</code></td>
+<td><code>bidding access</code>, <code>bidding list</code>, <code>bidding leader</code></td>
+</tr>
+<tr>
+<td>Auctions</td>
+<td><code>/auctions</code>, <code>/auction/create</code>, <code>/auction/{id}</code>, <code>/auction/{id}/edit</code>, <code>/auction-export/{id}</code>, <code>/auction-print/{id}</code>, <code>/auction-send-winner/{id}</code></td>
+<td><code>auction access</code>, <code>create</code>, <code>edit</code>, <code>delete</code>, <code>export</code>, <code>print</code></td>
+</tr>
+<tr>
+<td>Items</td>
+<td><code>/items</code>, <code>/item/create</code>, <code>/item/upload</code>, <code>/item/{id}</code>, <code>/item/{id}/edit</code></td>
+<td><code>item access</code>, <code>create</code>, <code>edit</code>, <code>delete</code>, <code>upload</code></td>
+</tr>
+<tr>
+<td>Administration</td>
+<td><code>/companies</code>, <code>/users</code>, <code>/roles</code>, <code>/system-logs</code></td>
+<td><code>company</code>, <code>user</code>, <code>role</code>, <code>system logs</code></td>
+</tr>
+<tr>
+<td>Open</td>
+<td><code>/</code> (welcome page with auctions), <code>/qr-generator</code></td>
+<td>none</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <code>user</code> role is what bidders receive, including people who sign in with Google for the first time. Ids in URLs are encrypted.</p>
+<h2 id="4-how-an-auction-runs">4. How an auction runs<a href="#4-how-an-auction-runs" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<h3 id="setting-up">Setting up<a href="#setting-up" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<ol>
+<li>Create items by form (<code>Items\Form</code>) or by Excel (<code>Items\Upload</code>, <code>ItemsImport</code>). Pictures are stored under <code>public/uploads</code>.</li>
+<li>Create an auction (<code>AuctionController::store</code>). Only items without a current auction are offered. <code>generateAuctionCode()</code> assigns the code.</li>
+<li>Options on the auction:</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_bid</code></td>
+<td>The lowest amount accepted</td>
+</tr>
+<tr>
+<td><code>bid_limit</code></td>
+<td>How many bids one user may place; empty for no limit</td>
+</tr>
+<tr>
+<td><code>show_bidders</code></td>
+<td>Bidders' names are visible in the bid list</td>
+</tr>
+<tr>
+<td><code>show_leading_bidder</code></td>
+<td>Everyone sees the current highest bid; otherwise only holders of <code>bidding leader</code></td>
+</tr>
+<tr>
+<td><code>show_last_place_bidder</code></td>
+<td>Shows the lowest of the users' best bids</td>
+</tr>
+<tr>
+<td><code>restrict_to_company_only</code></td>
+<td>Only users of the auction's company may take part</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="status">Status<a href="#status" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p>There is no stored schedule. <code>Auctions\Tab::checkStatus()</code> compares the server time with the start and end and writes the result to <code>auctions.status</code> <strong>each time the component is rendered</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Before start</td>
+<td><code>UPCOMING</code></td>
+</tr>
+<tr>
+<td>Between start and end</td>
+<td><code>OPEN</code></td>
+</tr>
+<tr>
+<td>After end</td>
+<td><code>ENDED</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The same component shows the countdown (<code>getTimeRemaining()</code>).</p>
+<h3 id="bidding">Bidding<a href="#bidding" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<ol>
+<li>The bidder opens <code>/bidding/{id}</code>. <code>TermsAgreement</code> asks them to accept the terms first.</li>
+<li><code>Biddings\Bid::PlaceBid()</code> validates that the amount is at least <code>min_bid</code>, saves a <code>Bidding</code>, writes an activity log entry and sends <code>BidNotification</code> to the bidder.</li>
+<li>The component reloads the bidder's own bids (<code>checkDuplicateBid()</code>), and the leading and last-place bids according to the auction's options.</li>
+</ol>
+<h3 id="winner">Winner<a href="#winner" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p>When the status is <code>ENDED</code>, <code>Tab::getAuctionWinner()</code> takes the bid with the <strong>highest amount, earliest first in case of a tie</strong>, and saves or updates the <code>auction_winners</code> row. The administrator then:</p>
+<ul>
+<li>exports the bids (<code>AuctionExport</code>),</li>
+<li>prints the result (<code>pages/auctions/pdf.blade.php</code>),</li>
+<li>sends <code>AuctionWinnerNotification</code> with <code>/auction-send-winner/{id}</code>.</li>
+</ul>
+<h2 id="5-weak-points-to-fix-before-the-next-auction">5. Weak points to fix before the next auction<a href="#5-weak-points-to-fix-before-the-next-auction" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<p>These are properties of the current code that matter when money and fairness are involved. They are listed here so that the next maintainer deals with them first.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Detail</th>
+<th>Suggested fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The bid form does not re-check that the auction is open</td>
+<td><code>PlaceBid()</code> checks only the minimum amount. Whether bidding is possible is decided by what the page shows.</td>
+<td>In <code>PlaceBid()</code>, reload the auction and reject the bid unless the current time is between start and end.</td>
+</tr>
+<tr>
+<td>The bid limit is enforced only in the view</td>
+<td>The button is hidden when the user has reached <code>bid_limit</code>; the method does not count.</td>
+<td>Count the user's bids inside <code>PlaceBid()</code>, in a transaction.</td>
+</tr>
+<tr>
+<td>The company restriction is enforced only in the views</td>
+<td><code>restrict_to_company_only</code> is tested in <code>livewire/biddings/bid.blade.php</code> and <code>livewire/terms-agreement.blade.php</code>, not in PHP.</td>
+<td>Add the check to <code>BiddingController</code> and <code>PlaceBid()</code>.</td>
+</tr>
+<tr>
+<td>A new bid need not beat the current highest</td>
+<td>Any amount at or above the minimum is accepted. This may be intended (sealed-bid style); confirm with the business owner.</td>
+<td>If not intended, require the amount to exceed the current highest bid.</td>
+</tr>
+<tr>
+<td>Status and winner depend on someone viewing the auction</td>
+<td>An auction nobody opens after its end keeps the status <code>OPEN</code> in the database and has no winner row.</td>
+<td>A scheduled command that closes ended auctions and records winners.</td>
+</tr>
+<tr>
+<td>An ended auction with no bids</td>
+<td><code>getAuctionWinner()</code> updates an existing winner row from a bid that may not exist.</td>
+<td>Guard against a missing highest bid.</td>
+</tr>
+<tr>
+<td>Registration is open</td>
+<td><code>Auth::routes()</code> is called without options, so <code>/register</code> and password reset are available to anyone who can reach the site.</td>
+<td>Disable registration, or restrict it to company e-mail domains, if only employees should bid.</td>
+</tr>
+<tr>
+<td>Dates and times</td>
+<td>Start and end are stored as separate date and time columns and compared through <code>strtotime()</code>.</td>
+<td>Store them as datetimes and compare with Carbon.</td>
+</tr>
+<tr>
+<td>No tests</td>
+<td>Bidding rules are not covered by any test.</td>
+<td>Write feature tests for each rule above before changing the code.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-maintenance-procedures">6. Maintenance procedures<a href="#6-maintenance-procedures" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<h3 id="adding-an-auction-option">Adding an auction option<a href="#adding-an-auction-option" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p>Migration on <code>auctions</code>, <code>Auction::$fillable</code>, both form requests, <code>AuctionController::store()</code> and <code>update()</code>, the create and edit views, and the place where it takes effect (<code>Biddings\Bid</code> or <code>Auctions\Tab</code>). Enforce it in PHP, not only in the Blade view.</p>
+<h3 id="item-upload-format">Item upload format<a href="#item-upload-format" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p><code>ItemsImport</code> defines the expected columns. Keep the sample workbook in step with it and consider placing a template in <code>public/assets</code> so administrators can download it.</p>
+<h3 id="assets">Assets<a href="#assets" class="anchor" aria-hidden="true" title="Permalink">#</a></h3>
+<p><code>npm run dev</code> or <code>npm run build</code>; commit <code>public/build</code> if the server does not run Node.</p>
+<h2 id="7-deployment">7. Deployment<a href="#7-deployment" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<p><code>.cpanel.yml</code> copies the repository to <code>/home/kojiesanadmin/public_html/online-auction.bevi.ph</code>.</p>
+<ol>
+<li><code>npm run build</code> and commit the build.</li>
+<li>Merge to <code>main</code>, deploy from cPanel.</li>
+<li>On the server: <code>composer install --no-dev --optimize-autoloader</code> (the <code>hub-auth-client</code> path must exist beside the project), <code>php artisan migrate --force</code>, <code>php artisan optimize:clear</code>.</li>
+</ol>
+<p>Back up the database and <code>public/uploads</code>. <strong>Do not deploy while an auction is open.</strong></p>
+<h2 id="8-troubleshooting">8. Troubleshooting<a href="#8-troubleshooting" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An auction opens or closes at the wrong time</td>
+<td>Server or application time zone.</td>
+</tr>
+<tr>
+<td>An ended auction still shows as open in a list</td>
+<td>Its status is only refreshed when its tab component renders.</td>
+</tr>
+<tr>
+<td>No winner recorded</td>
+<td>Nobody opened the auction after it ended, or there were no bids.</td>
+</tr>
+<tr>
+<td>Bidders see each other's names</td>
+<td><code>show_bidders</code> is on for that auction.</td>
+</tr>
+<tr>
+<td>Item pictures are missing</td>
+<td><code>public/uploads</code> was not copied, or the storage link is missing.</td>
+</tr>
+<tr>
+<td>No bid confirmation e-mail</td>
+<td>Mail settings; the failure is swallowed by an empty <code>catch</code> in <code>PlaceBid()</code>, so check the mail configuration directly.</td>
+</tr>
+<tr>
+<td>&quot;The payload is invalid&quot;</td>
+<td>A plain id in a URL.</td>
+</tr>
+<tr>
+<td>Composer cannot find <code>hub-auth-client</code></td>
+<td>The sibling folder is missing.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="9-handover-checklist">9. Handover checklist<a href="#9-handover-checklist" class="anchor" aria-hidden="true" title="Permalink">#</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"> GitHub access to <code>webdev-jm/online-auction</code> and <code>hub-auth-client</code></li>
+<li><input disabled="" type="checkbox"> cPanel access and the deployment trigger</li>
+<li><input disabled="" type="checkbox"> Production <code>.env</code></li>
+<li><input disabled="" type="checkbox"> Database credentials and a dump of past auctions</li>
+<li><input disabled="" type="checkbox"> A copy of <code>public/uploads</code></li>
+<li><input disabled="" type="checkbox"> Mail account; Google OAuth client</li>
+<li><input disabled="" type="checkbox"> The auction mechanics and terms as approved by the business owner (they decide several questions in section 5)</li>
+<li><input disabled="" type="checkbox"> The date of the next planned auction</li>
+<li><input disabled="" type="checkbox"> A superadmin account for the new maintainer</li>
+</ul>
+
+</main>
+</div>
+<script>
+document.getElementById('toc-filter').addEventListener('input', function () {
+    var term = this.value.toLowerCase();
+    document.querySelectorAll('#toc > li').forEach(function (group) {
+        var groupMatches = group.firstElementChild.textContent.toLowerCase().indexOf(term) !== -1;
+        var anyChild = false;
+        group.querySelectorAll('ul li').forEach(function (item) {
+            var show = groupMatches || item.textContent.toLowerCase().indexOf(term) !== -1;
+            item.style.display = show ? '' : 'none';
+            anyChild = anyChild || show;
+        });
+        group.style.display = (groupMatches || anyChild) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

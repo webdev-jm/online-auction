@@ -48,7 +48,7 @@ return [
     */
 
     'google_fonts' => [
-        'allowed' => true,
+        'allowed' => false,
     ],
 
     /*
@@ -190,7 +190,7 @@ return [
     |
     */
 
-    'classes_body' => 'text-sm',
+    'classes_body' => 'text-sm oa-app',
     'classes_brand' => '',
     'classes_brand_text' => '',
     'classes_content_wrapper' => '',
@@ -198,8 +198,8 @@ return [
     'classes_content' => '',
     'classes_sidebar' => 'sidebar-dark-primary elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-dark navbar-light',
-    'classes_topnav_nav' => 'navbar-expand',
+    'classes_topnav' => 'navbar-dark oa-navbar',
+    'classes_topnav_nav' => 'navbar-expand-lg',
     'classes_topnav_container' => 'container',
 
     /*
@@ -300,9 +300,27 @@ return [
 
     'menu' => [
         [
-            'text'      => 'MyBids',
+            'type'          => 'darkmode-widget',
+            'topnav_right'  => true,
+        ],
+        [
+            'text'      => 'Dashboard',
+            'url'       => 'dashboard',
+            'icon'      => 'fas fa-fw fa-chart-line',
+            'can'       => 'auction access',
+            'active'    => ['dashboard']
+        ],
+        [
+            'text'      => 'Browse',
+            'url'       => 'home',
+            'icon'      => 'fas fa-fw fa-store',
+            'can'       => 'bidding access',
+            'active'    => ['home', 'bidding/*']
+        ],
+        [
+            'text'      => 'My bids',
             'url'       => 'my-bid',
-            'icon'      => 'fas fa-fw fa-gavel',
+            'icon'      => 'fas fa-fw fa-hand-holding-usd',
             'can'       => 'bidding access',
             'active'    => ['my-bid']
         ],
@@ -311,7 +329,7 @@ return [
             'url'       => 'auctions',
             'icon'      => 'fas fa-fw fa-gavel',
             'can'       => 'auction access',
-            'active'    => ['auction*']
+            'active'    => ['auctions', 'auction/*', 'auction-*']
         ],
         [
             'text'      => 'Items',
@@ -324,8 +342,15 @@ return [
             'text'  => 'Settings',
             'url'   => '#',
             'icon'  => 'fa fa-fw fa-cog',
-            'can'   => ['user access', 'role access', 'company access', 'system logs'],
+            'can'   => ['settings manage', 'user access', 'role access', 'company access', 'system logs'],
             'submenu' => [
+                [
+                    'text'      => 'Auction Settings',
+                    'url'       => 'settings/auction',
+                    'icon'      => 'fas fa-fw fa-sliders-h',
+                    'can'       => 'settings manage',
+                    'active'    => ['settings/auction']
+                ],
                 [
                     'text'      => 'Companies',
                     'url'       => 'companies',

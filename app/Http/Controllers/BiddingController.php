@@ -5,24 +5,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Auction;
 use App\Models\Bidding;
+use App\Services\AuctionLifecycle;
+use App\Services\AuctionSettings;
 
 class BiddingController extends Controller
 {
-    public function index($id) {
-        $auction = Auction::findOrFail(decrypt($id));
+    public function index($id, AuctionSettings $settings, AuctionLifecycle $lifecycle) {
+        $auction = Auction::with(['item.pictures', 'item.specifications'])->findOrFail(decrypt($id));
 
-        $item = $auction->item;
+        abort_unless($auction->isVisibleTo(auth()->user()) || auth()->user()->can('auction access'), 403);
+
+        $lifecycle->syncIfDue();
 
         return view('pages.biddings.index')->with([
             'auction' => $auction,
-            'item' => $item
+            'item' => $auction->item,
+            'termsHtml' => $settings->termsHtml(),
         ]);
     }
 
     public function list($id) {
         $auction = Auction::findOrFail(decrypt($id));
 
-        $bidders = Bidding::orderBy('bid_amount', 'DESC')
+        abort_unless(auth()->user()->can('bidding list') || $auction->show_bidders, 403);
+
+        $bidders = Bidding::with('user')
+            ->orderBy('bid_amount', 'DESC')
+            ->orderBy('created_at', 'ASC')
             ->where('auction_id', $auction->id)
             ->paginate(10)->appends(request()->query());
 
@@ -33,7 +42,8 @@ class BiddingController extends Controller
     }
 
     public function my_bids() {
-        $biddings = Bidding::orderBy('created_at', 'DESC')
+        $biddings = Bidding::with(['auction.item.pictures', 'auction.auction_winner'])
+            ->orderBy('created_at', 'DESC')
             ->where('user_id', auth()->user()->id)
             ->paginate(10);
 

@@ -1,135 +1,92 @@
 @extends('layouts.app')
 
 {{-- Customize layout sections --}}
-@section('subtitle', 'ITEM LIST')
-@section('content_header_title', 'ITEMS')
-@section('content_header_subtitle', 'ITEM LIST')
+@section('subtitle', 'Items')
 
 {{-- Content body: main page content --}}
 @section('content_body')
+<div class="pt-3">
+    <x-page-head eyebrow="Manage" title="Items" description="Everything that can be put up for auction.">
+        {{ html()->form('GET', route('item.index'))->open() }}
+            <div class="input-group input-group-sm" style="width: min(260px, 100%)">
+                <div class="input-group-prepend"><span class="input-group-text bg-transparent"><i class="fas fa-search"></i></span></div>
+                {{ html()->search('search', $search)->class('form-control')->placeholder('Number, name, brand or specs')->attribute('aria-label', 'Search items') }}
+            </div>
+        {{ html()->form()->close() }}
+        @can('item upload')
+            <a href="{{ route('item.upload') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-upload mr-1"></i> Upload</a>
+        @endcan
+        @can('item create')
+            <a href="{{ route('item.create') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i> New item</a>
+        @endcan
+    </x-page-head>
+
     <div class="card">
-        <div class="card-header py-2">
-            <div class="row">
-                <div class="col-lg-6 align-middle">
-                    <strong class="text-lg">ITEM LIST</strong>
+        <div class="card-body p-0 table-responsive">
+            @if($items->isEmpty())
+                <div class="oa-empty">
+                    <i class="fas fa-laptop"></i>
+                    @if($search)
+                        <strong>No items match "{{ $search }}"</strong>
+                        <a href="{{ route('item.index') }}">Clear search</a>
+                    @else
+                        <strong>No items yet</strong>
+                    @endif
                 </div>
-                <div class="col-lg-6 text-right">
-                    @can('item create')
-                        <a href="{{route('item.create')}}" class="btn btn-primary btn-xs">
-                            <i class="fa fa-file"></i>
-                            NEW ITEM
-                        </a>
-                    @endcan
-                    @can('item upload')
-                        <a href="{{route('item.upload')}}" class="btn btn-info btn-xs">
-                            <i class="fa fa-upload"></i>
-                            UPLOAD ITEM
-                        </a>
-                    @endcan
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-
-            {{ html()->form('GET', route('item.index'))->open() }}
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ html()->label('Search', 'search')->class(['mb-0']) }}
-                            {{ html()->text('search', $search)->class(['form-control', 'form-control-sm'])->placeholder('Search') }}
-                        </div>
-                    </div>
-                </div>
-            {{ html()->form()->close() }}
-
-            <div class="row">
-                <div class="col-12 table-responsive p-1 bg-gray rounded">
-                    <table class="table table-sm table-striped table-hover bg-white mb-0">
-                        <thead class="text-center bg-dark">
-                            <tr class="text-center">
-                                <th>ITEM NUMBER</th>
-                                <th>NAME</th>
-                                <th>BRAND</th>
-                                <th>STATUS</th>
-                                <th></th>
+            @else
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 56px"></th>
+                            <th>Item number</th>
+                            <th>Name</th>
+                            <th>Brand</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($items as $item)
+                            @php
+                                $thumb = $item->pictures->first();
+                                $sold = $item->auctions->contains(fn ($auction) => $auction->auction_winner && $auction->auction_winner->status !== \App\Models\AuctionWinner::STATUS_FORFEITED);
+                            @endphp
+                            <tr>
+                                <td>
+                                    @if($thumb)
+                                        <img src="{{ $thumb->url('small') }}" alt="" width="40" height="40" style="border-radius: 6px; object-fit: cover" loading="lazy">
+                                    @endif
+                                </td>
+                                <td class="oa-num font-weight-bold">{{ $item->item_number }}</td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->brand }}</td>
+                                <td>
+                                    @if($sold)
+                                        <span class="oa-pill is-sold">Sold</span>
+                                    @else
+                                        <span class="oa-pill is-open">Available</span>
+                                    @endif
+                                </td>
+                                <td class="text-right text-nowrap">
+                                    <a href="{{ route('item.show', encrypt($item->id)) }}" class="btn btn-outline-secondary btn-xs">View</a>
+                                    @can('item edit')
+                                        <a href="{{ route('item.edit', encrypt($item->id)) }}" class="btn btn-outline-secondary btn-xs">Edit</a>
+                                    @endcan
+                                    @can('item delete')
+                                        <a href="#" class="btn btn-outline-secondary btn-xs text-danger btn-delete" data-id="{{ encrypt($item->id) }}" aria-label="Delete {{ $item->name }}"><i class="fas fa-trash-alt"></i></a>
+                                    @endcan
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($items as $item)
-                                <tr>
-                                    <td class="align-middle text-center">
-                                        {{$item->item_number}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{$item->name}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{$item->brand}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        @php
-                                            $auctions = $item->auctions;
-                                            $status = 0;
-                                            foreach($auctions as $auction) {
-                                                if(!empty($auction->auction_winner)) {
-                                                    $status = 1;
-                                                }
-                                            }
-                                        @endphp
-                                        @if($status)
-                                            <span class="badge badge-danger">SOLD</span>
-                                        @else
-                                            <span class="badge badge-success">AVAILABLE</span>
-                                        @endif
-                                    </td>
-                                    <td class="align-middle text-right p-0 pr-1">
-                                        <a href="{{route('item.show', encrypt($item->id, 'roles'))}}" class="btn btn-info btn-xs mb-0 ml-0">
-                                            <i class="fa fa-list"></i>
-                                            VIEW
-                                        </a>
-                                        @can('item edit')
-                                            <a href="{{route('item.edit', encrypt($item->id, 'roles'))}}" class="btn btn-success btn-xs mb-0 ml-0">
-                                                <i class="fa fa-pen-alt"></i>
-                                                EDIT
-                                            </a>
-                                        @endcan
-                                        @can('item delete')
-                                            <a href="#" class="btn btn-danger btn-xs mb-0 ml-0 btn-delete" data-id="{{encrypt($item->id)}}">
-                                                <i class="fa fa-trash-alt"></i>
-                                                DELETE
-                                            </a>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
-        <div class="card-footer">
-            {{$items->links()}}
-        </div>
+        @if($items->hasPages())
+            <div class="card-footer">{{ $items->links() }}</div>
+        @endif
     </div>
+</div>
 @stop
 
-{{-- Push extra CSS --}}
-@push('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Push extra scripts --}}
-@push('js')
-    <script>
-        $(function() {
-            $('body').on('click', '.btn-delete', function(e) {
-                e.preventDefault();
-                var id = $(this).data('id');
-                Livewire.dispatch('setDeleteModel', {type: 'Item', model_id: id});
-                $('#modal-delete').modal('show');
-            });
-        });
-    </script>
-@endpush
+@include('partials.delete-script', ['type' => 'Item'])

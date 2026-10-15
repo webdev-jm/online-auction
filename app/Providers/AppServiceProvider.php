@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Services\AuctionSettings;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
+use JeroenNoten\LaravelAdminLte\Events\DarkModeWasToggled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(AuctionSettings::class);
     }
 
     /**
@@ -21,5 +25,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+
+        Event::listen(function (DarkModeWasToggled $event): void {
+            auth()->user()?->update(['dark_mode' => $event->darkMode->isEnabled()]);
+        });
+
+        Event::listen(function (Login $event): void {
+            session(['adminlte_dark_mode' => (bool) $event->user->dark_mode]);
+        });
     }
 }

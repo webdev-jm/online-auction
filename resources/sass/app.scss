@@ -1,8 +1,1185 @@
-// Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
+// Online Auction design layer.
+// AdminLTE 3 (Bootstrap 4) still loads from public/vendor; this file sits on top of it
+// and only restyles. Colours are CSS custom properties so dark mode can swap them.
 
-// Variables
-@import 'variables';
+:root {
+    --oa-bg: #f3f4f7;
+    --oa-surface: #ffffff;
+    --oa-surface-2: #f7f8fa;
+    --oa-ink: #141c2b;
+    --oa-ink-2: #3b4558;
+    --oa-muted: #687184;
+    --oa-line: #e2e5eb;
+    --oa-navy: #13213a;
+    --oa-navy-2: #1e3156;
+    --oa-brass: #b98a2e;
+    --oa-brass-ink: #86600f;
+    --oa-brass-soft: #f6edda;
+    --oa-on-brass: #1b1406;
+    --oa-ok: #1e7a4c;
+    --oa-ok-soft: #e1f3e8;
+    --oa-warn: #8f6200;
+    --oa-warn-soft: #fbf0d6;
+    --oa-bad: #a8323a;
+    --oa-bad-soft: #f8e3e4;
+    --oa-info: #2c5a9e;
+    --oa-info-soft: #e3ecf8;
+    --oa-radius: 10px;
+    --oa-radius-sm: 6px;
+    --oa-shadow: 0 1px 2px rgba(20, 28, 43, .05), 0 4px 16px rgba(20, 28, 43, .05);
+    --oa-font: 'Manrope Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
 
-// Bootstrap
-@import 'bootstrap/scss/bootstrap';
+.dark-mode {
+    --oa-bg: #0f131a;
+    --oa-surface: #171c25;
+    --oa-surface-2: #1c2230;
+    --oa-ink: #e7eaf0;
+    --oa-ink-2: #c3c9d4;
+    --oa-muted: #8e97a8;
+    --oa-line: #2a3140;
+    --oa-navy: #0b1220;
+    --oa-navy-2: #18243b;
+    --oa-brass: #d9a84f;
+    --oa-brass-ink: #e2b967;
+    --oa-brass-soft: #33281a;
+    --oa-ok: #5cc18e;
+    --oa-ok-soft: #16301f;
+    --oa-warn: #e1b44e;
+    --oa-warn-soft: #33290f;
+    --oa-bad: #ee8a90;
+    --oa-bad-soft: #3a1d20;
+    --oa-info: #8bb2f0;
+    --oa-info-soft: #1a2741;
+    --oa-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+// ---------------------------------------------------------------- base
+
+body.oa-app,
+.oa-app .main-header,
+.oa-app .btn,
+.oa-app .form-control,
+.oa-app .custom-select,
+.oa-app .dropdown-menu,
+.oa-app .popover,
+.oa-app .tooltip {
+    font-family: var(--oa-font);
+}
+
+body.oa-app {
+    color: var(--oa-ink);
+    background: var(--oa-bg);
+    font-feature-settings: 'tnum' 1;
+}
+
+.oa-app .content-wrapper {
+    background: var(--oa-bg);
+    color: var(--oa-ink);
+}
+
+.oa-app a {
+    color: var(--oa-navy-2);
+}
+
+.oa-app.dark-mode .content-wrapper a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: var(--oa-brass-ink);
+}
+
+.oa-app h1, .oa-app h2, .oa-app h3, .oa-app h4, .oa-app h5 {
+    color: var(--oa-ink);
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.oa-app .text-muted {
+    color: var(--oa-muted) !important;
+}
+
+.oa-num {
+    font-variant-numeric: tabular-nums;
+}
+
+.oa-eyebrow {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--oa-brass-ink);
+}
+
+:focus-visible {
+    outline: 2px solid var(--oa-brass);
+    outline-offset: 2px;
+}
+
+// ---------------------------------------------------------------- navbar
+
+.oa-app .main-header.oa-navbar {
+    background: var(--oa-navy);
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .brand-text {
+        font-weight: 800 !important;
+        letter-spacing: .08em;
+        font-size: .95rem;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, .78);
+        font-weight: 600;
+        border-radius: var(--oa-radius-sm);
+    }
+
+    .nav-link:hover,
+    .nav-item.active > .nav-link,
+    .nav-link.active {
+        color: #fff;
+        background: rgba(255, 255, 255, .08);
+    }
+
+    .dropdown-menu {
+        border: 1px solid var(--oa-line);
+        border-radius: var(--oa-radius);
+        box-shadow: var(--oa-shadow);
+        background: var(--oa-surface);
+    }
+
+    .dropdown-item {
+        color: var(--oa-ink);
+        border-radius: var(--oa-radius-sm);
+    }
+
+    .dropdown-item.active,
+    .dropdown-item:active {
+        background: var(--oa-brass-soft);
+        color: var(--oa-ink);
+    }
+}
+
+// ---------------------------------------------------------------- page header
+
+.oa-app .content-header {
+    padding-top: 1.5rem;
+    padding-bottom: .5rem;
+
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--oa-ink);
+
+        small {
+            color: var(--oa-muted);
+            font-size: .95rem;
+            font-weight: 600;
+        }
+    }
+}
+
+// ---------------------------------------------------------------- cards
+
+.oa-app .card {
+    background: var(--oa-surface);
+    color: var(--oa-ink);
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+    box-shadow: var(--oa-shadow);
+
+    > .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--oa-line);
+        color: var(--oa-ink);
+        padding: .85rem 1.1rem;
+
+        .card-title,
+        strong.text-lg {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+    }
+
+    > .card-footer {
+        background: var(--oa-surface-2);
+        border-top: 1px solid var(--oa-line);
+        border-radius: 0 0 var(--oa-radius) var(--oa-radius);
+    }
+
+    > .card-footer:empty {
+        display: none;
+    }
+}
+
+.oa-app .list-group-item {
+    background: transparent;
+    border-color: var(--oa-line);
+    color: var(--oa-ink);
+}
+
+// ---------------------------------------------------------------- tables
+
+.oa-app .table {
+    color: var(--oa-ink);
+    background: transparent !important;
+
+    thead th,
+    thead.bg-dark th {
+        background: var(--oa-surface-2) !important;
+        color: var(--oa-muted) !important;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--oa-line);
+        border-top: 0;
+        white-space: nowrap;
+    }
+
+    td, th {
+        border-color: var(--oa-line);
+        vertical-align: middle;
+    }
+}
+
+.oa-app .table-striped tbody tr:nth-of-type(odd) {
+    background: var(--oa-surface-2);
+}
+
+.oa-app .table-hover tbody tr:hover {
+    background: var(--oa-brass-soft);
+    color: var(--oa-ink);
+}
+
+.oa-app .table-responsive.bg-gray {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+// ---------------------------------------------------------------- buttons
+
+.oa-app .btn {
+    font-weight: 600;
+    border-radius: var(--oa-radius-sm);
+}
+
+.oa-app .btn-flat {
+    border-radius: var(--oa-radius-sm);
+}
+
+.oa-app .btn-primary {
+    background: var(--oa-navy-2);
+    border-color: var(--oa-navy-2);
+    color: #fff;
+
+    &:hover, &:focus {
+        background: var(--oa-navy);
+        border-color: var(--oa-navy);
+    }
+}
+
+.oa-app.dark-mode .btn-primary {
+    background: #2f4a7c;
+    border-color: #2f4a7c;
+}
+
+.btn-accent,
+.oa-app .btn-accent {
+    background: var(--oa-brass);
+    border-color: var(--oa-brass);
+    color: var(--oa-on-brass);
+
+    &:hover, &:focus {
+        filter: brightness(1.06);
+        color: var(--oa-on-brass);
+    }
+}
+
+.oa-app .btn-outline-secondary,
+.oa-app .btn-light {
+    background: var(--oa-surface);
+    border-color: var(--oa-line);
+    color: var(--oa-ink);
+
+    &:hover {
+        border-color: var(--oa-muted);
+        background: var(--oa-surface-2);
+        color: var(--oa-ink);
+    }
+}
+
+// ---------------------------------------------------------------- forms
+
+.oa-app .form-control,
+.oa-app .custom-select {
+    background-color: var(--oa-surface);
+    border-color: var(--oa-line);
+    color: var(--oa-ink);
+    border-radius: var(--oa-radius-sm);
+
+    &:focus {
+        border-color: var(--oa-brass);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--oa-brass) 25%, transparent);
+    }
+}
+
+.oa-app label,
+.oa-app .oa-label {
+    font-weight: 600;
+    font-size: .8rem;
+    color: var(--oa-ink-2);
+}
+
+.oa-app .form-text,
+.oa-hint {
+    font-size: .8rem;
+    color: var(--oa-muted);
+}
+
+.oa-app .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+    background: var(--oa-navy-2);
+    border-color: var(--oa-navy-2);
+}
+
+// ---------------------------------------------------------------- status pills
+
+.oa-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    background: var(--oa-surface-2);
+    color: var(--oa-ink-2);
+    border: 1px solid var(--oa-line);
+
+    &::before {
+        content: '';
+        width: .45rem;
+        height: .45rem;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    &.is-open, &.is-paid { background: var(--oa-ok-soft); color: var(--oa-ok); border-color: transparent; }
+    &.is-upcoming, &.is-awaiting_payment { background: var(--oa-warn-soft); color: var(--oa-warn); border-color: transparent; }
+    &.is-ended, &.is-forfeited { background: var(--oa-bad-soft); color: var(--oa-bad); border-color: transparent; }
+    &.is-released, &.is-sold { background: var(--oa-info-soft); color: var(--oa-info); border-color: transparent; }
+    &.is-leading { background: var(--oa-ok-soft); color: var(--oa-ok); border-color: transparent; }
+    &.is-outbid { background: var(--oa-bad-soft); color: var(--oa-bad); border-color: transparent; }
+    &.is-bid { background: var(--oa-brass-soft); color: var(--oa-brass-ink); border-color: transparent; }
+}
+
+// ---------------------------------------------------------------- page heading row
+
+.oa-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+
+    h2 {
+        margin: 0;
+        font-size: 1.35rem;
+    }
+
+    p {
+        margin: .15rem 0 0;
+        color: var(--oa-muted);
+    }
+}
+
+.oa-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+}
+
+// ---------------------------------------------------------------- tabs
+
+.oa-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    padding: .25rem;
+    background: var(--oa-surface);
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+
+    a, button {
+        border: 0;
+        background: transparent;
+        color: var(--oa-ink-2);
+        font-weight: 600;
+        padding: .35rem .85rem;
+        border-radius: var(--oa-radius-sm);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    a:hover, button:hover {
+        background: var(--oa-surface-2);
+        color: var(--oa-ink);
+    }
+
+    .is-active {
+        background: var(--oa-navy-2) !important;
+        color: #fff !important;
+    }
+
+    .oa-count {
+        font-size: .72rem;
+        opacity: .75;
+        margin-left: .25rem;
+    }
+}
+
+// ---------------------------------------------------------------- auction cards
+
+.oa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.oa-auction-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--oa-surface);
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+    box-shadow: var(--oa-shadow);
+    overflow: hidden;
+    color: var(--oa-ink);
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(20, 28, 43, .1);
+    }
+
+    .oa-auction-media {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: var(--oa-surface-2);
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .oa-pill {
+            position: absolute;
+            top: .6rem;
+            left: .6rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+        }
+    }
+
+    .oa-auction-body {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        padding: .85rem 1rem 1rem;
+        flex: 1;
+    }
+
+    .oa-auction-code {
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        color: var(--oa-muted);
+    }
+
+    .oa-auction-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.3;
+        color: var(--oa-ink);
+    }
+
+    .oa-auction-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .5rem;
+        margin-top: auto;
+        padding-top: .6rem;
+        border-top: 1px solid var(--oa-line);
+
+        dt {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--oa-muted);
+        }
+
+        dd {
+            margin: 0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    .oa-auction-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+}
+
+.oa-placeholder-img {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: var(--oa-muted);
+    font-size: 2rem;
+    background: repeating-linear-gradient(135deg, var(--oa-surface-2) 0 12px, var(--oa-bg) 12px 24px);
+}
+
+.oa-countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--oa-ink);
+
+    &.is-urgent {
+        color: var(--oa-bad);
+    }
+}
+
+// ---------------------------------------------------------------- stats
+
+.oa-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.oa-stat {
+    background: var(--oa-surface);
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--oa-shadow);
+
+    .oa-stat-label {
+        font-size: .74rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--oa-muted);
+    }
+
+    .oa-stat-value {
+        font-size: 1.9rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-top: .25rem;
+        font-variant-numeric: tabular-nums;
+        color: var(--oa-ink);
+    }
+
+    .oa-stat-note {
+        font-size: .8rem;
+        color: var(--oa-muted);
+    }
+
+    &.is-attention {
+        border-color: var(--oa-brass);
+        background: linear-gradient(0deg, var(--oa-brass-soft), var(--oa-surface) 70%);
+    }
+}
+
+// ---------------------------------------------------------------- empty states
+
+.oa-empty {
+    display: grid;
+    justify-items: center;
+    gap: .35rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--oa-muted);
+
+    i {
+        font-size: 1.75rem;
+        color: var(--oa-brass);
+        margin-bottom: .25rem;
+    }
+
+    strong {
+        color: var(--oa-ink);
+        font-size: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------- bidding page
+
+.oa-gallery {
+    display: grid;
+    gap: .6rem;
+
+    .oa-gallery-main {
+        aspect-ratio: 4 / 3;
+        border-radius: var(--oa-radius);
+        overflow: hidden;
+        background: var(--oa-surface-2);
+        border: 1px solid var(--oa-line);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+    }
+
+    .oa-gallery-thumbs {
+        display: flex;
+        gap: .5rem;
+        overflow-x: auto;
+        padding-bottom: .25rem;
+
+        button {
+            flex: none;
+            width: 68px;
+            height: 68px;
+            padding: 0;
+            border-radius: var(--oa-radius-sm);
+            border: 2px solid transparent;
+            overflow: hidden;
+            background: var(--oa-surface-2);
+            cursor: pointer;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            &.is-active {
+                border-color: var(--oa-brass);
+            }
+        }
+    }
+}
+
+.oa-specs {
+    display: grid;
+    grid-template-columns: minmax(110px, 38%) 1fr;
+    margin: 0;
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+    overflow: hidden;
+
+    dt, dd {
+        margin: 0;
+        padding: .55rem .8rem;
+        border-top: 1px solid var(--oa-line);
+    }
+
+    dt {
+        background: var(--oa-surface-2);
+        color: var(--oa-muted);
+        font-weight: 600;
+        font-size: .82rem;
+    }
+
+    dd {
+        overflow-wrap: anywhere;
+    }
+
+    dt:first-of-type, dd:first-of-type {
+        border-top: 0;
+    }
+}
+
+.oa-bid-panel {
+    position: sticky;
+    top: calc(57px + 1rem);
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--oa-surface);
+    border: 1px solid var(--oa-line);
+    border-radius: var(--oa-radius);
+    box-shadow: var(--oa-shadow);
+
+    .oa-bid-clock {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: .5rem;
+        padding: .75rem 1rem;
+        border-radius: var(--oa-radius-sm);
+        background: var(--oa-navy);
+        color: #fff;
+
+        span {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .75;
+        }
+
+        strong {
+            font-size: 1.2rem;
+            font-variant-numeric: tabular-nums;
+            color: #fff;
+        }
+    }
+
+    .oa-bid-figures {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .75rem;
+
+        div {
+            padding: .6rem .75rem;
+            border: 1px solid var(--oa-line);
+            border-radius: var(--oa-radius-sm);
+        }
+
+        span {
+            display: block;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--oa-muted);
+        }
+
+        strong {
+            font-size: 1.1rem;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    .oa-bid-input {
+        font-size: 1.35rem;
+        font-weight: 700;
+        height: auto;
+        padding: .55rem .8rem;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.oa-callout {
+    padding: .75rem 1rem;
+    border-radius: var(--oa-radius-sm);
+    background: var(--oa-surface-2);
+    border: 1px solid var(--oa-line);
+    font-size: .88rem;
+
+    &.is-ok { background: var(--oa-ok-soft); border-color: transparent; color: var(--oa-ok); }
+    &.is-warn { background: var(--oa-warn-soft); border-color: transparent; color: var(--oa-warn); }
+    &.is-bad { background: var(--oa-bad-soft); border-color: transparent; color: var(--oa-bad); }
+    &.is-info { background: var(--oa-info-soft); border-color: transparent; color: var(--oa-info); }
+
+    strong { color: inherit; }
+}
+
+.oa-rules {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: .4rem;
+    font-size: .86rem;
+
+    li {
+        display: flex;
+        gap: .5rem;
+        color: var(--oa-ink-2);
+    }
+
+    i {
+        color: var(--oa-brass);
+        margin-top: .2rem;
+        width: 1rem;
+        text-align: center;
+    }
+}
+
+.oa-terms {
+    max-width: 72ch;
+    line-height: 1.65;
+
+    h2 {
+        font-size: 1rem;
+        margin: 1.25rem 0 .4rem;
+    }
+
+    h2:first-child {
+        margin-top: 0;
+    }
+
+    ul {
+        padding-left: 1.2rem;
+    }
+}
+
+// ---------------------------------------------------------------- side panel (mechanics)
+
+.oa-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1060;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(10, 14, 22, .45);
+
+    .oa-drawer-panel {
+        width: min(520px, 100%);
+        height: 100%;
+        overflow-y: auto;
+        background: var(--oa-surface);
+        color: var(--oa-ink);
+        padding: 1.5rem;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, .2);
+    }
+
+    .oa-drawer-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------- settings page
+
+.oa-settings {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+
+    nav {
+        position: sticky;
+        top: calc(57px + 1rem);
+        display: grid;
+        gap: .15rem;
+
+        a {
+            padding: .45rem .75rem;
+            border-radius: var(--oa-radius-sm);
+            color: var(--oa-ink-2);
+            font-weight: 600;
+        }
+
+        a:hover {
+            background: var(--oa-surface);
+            text-decoration: none;
+        }
+    }
+
+    .card-body > .form-row + .form-row,
+    .oa-setting + .oa-setting {
+        margin-top: .25rem;
+    }
+}
+
+.oa-setting {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 280px);
+    gap: .5rem 1.5rem;
+    align-items: center;
+    padding: .85rem 0;
+    border-top: 1px solid var(--oa-line);
+
+    &:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .oa-setting-label {
+        font-weight: 700;
+        color: var(--oa-ink);
+    }
+
+    .oa-setting-help {
+        font-size: .82rem;
+        color: var(--oa-muted);
+    }
+
+    .custom-switch {
+        justify-self: end;
+    }
+}
+
+.oa-sticky-save {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    padding: .75rem 0;
+    background: linear-gradient(0deg, var(--oa-bg) 70%, transparent);
+}
+
+// ---------------------------------------------------------------- toasts
+
+.oa-toasts {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 2000;
+    display: grid;
+    gap: .5rem;
+    width: min(380px, calc(100vw - 2rem));
+}
+
+.oa-toast {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    padding: .8rem 1rem;
+    border-radius: var(--oa-radius);
+    background: var(--oa-surface);
+    color: var(--oa-ink);
+    border: 1px solid var(--oa-line);
+    box-shadow: 0 10px 30px rgba(10, 14, 22, .18);
+    animation: oa-toast-in .2s ease-out;
+    font-size: .9rem;
+
+    i {
+        margin-top: .15rem;
+    }
+
+    &.is-success i { color: var(--oa-ok); }
+    &.is-error i { color: var(--oa-bad); }
+    &.is-info i { color: var(--oa-info); }
+
+    p {
+        margin: 0;
+        flex: 1;
+    }
+
+    button {
+        border: 0;
+        background: none;
+        color: var(--oa-muted);
+        padding: 0 .25rem;
+        cursor: pointer;
+    }
+}
+
+@keyframes oa-toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+// ---------------------------------------------------------------- loading
+
+.oa-app [data-loading] {
+    opacity: .65;
+    pointer-events: none;
+}
+
+// ---------------------------------------------------------------- dark mode fixes for AdminLTE
+
+.oa-app.dark-mode {
+    .content-wrapper,
+    .main-footer {
+        background: var(--oa-bg);
+        color: var(--oa-ink);
+        border-color: var(--oa-line);
+    }
+
+    .card,
+    .modal-content {
+        background: var(--oa-surface);
+        color: var(--oa-ink);
+    }
+
+    .form-control,
+    .custom-select {
+        background-color: var(--oa-surface-2);
+        color: var(--oa-ink);
+        border-color: var(--oa-line);
+    }
+
+    .table {
+        color: var(--oa-ink);
+    }
+
+    .page-link {
+        background: var(--oa-surface);
+        border-color: var(--oa-line);
+        color: var(--oa-ink);
+    }
+}
+
+.oa-app .main-footer {
+    background: var(--oa-bg);
+    border-top: 1px solid var(--oa-line);
+    color: var(--oa-muted);
+    font-size: .8rem;
+}
+
+.oa-app .page-item.active .page-link {
+    background: var(--oa-navy-2);
+    border-color: var(--oa-navy-2);
+}
+
+// ---------------------------------------------------------------- responsive
+
+@media (max-width: 991.98px) {
+    .oa-settings {
+        grid-template-columns: 1fr;
+
+        nav {
+            position: static;
+            display: flex;
+            flex-wrap: wrap;
+        }
+    }
+
+    .oa-bid-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .oa-setting {
+        grid-template-columns: 1fr;
+
+        .custom-switch {
+            justify-self: start;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .oa-auction-card,
+    .oa-toast {
+        transition: none;
+        animation: none;
+    }
+}
+
+.oa-dim {
+    opacity: .55;
+    transition: opacity .15s;
+}
+
+// ---------------------------------------------------------------- public hero
+
+.oa-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: radial-gradient(120% 90% at 15% 15%, #1d2a44 0%, #0d1320 65%);
+    color: #e9edf5;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+
+    canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity .8s ease;
+
+        &.is-ready {
+            opacity: 1;
+        }
+    }
+
+    .oa-hero-inner {
+        position: relative;
+        max-width: 36rem;
+        padding: 2.5rem clamp(1.25rem, 5vw, 3.5rem);
+    }
+
+    .oa-eyebrow {
+        color: #d9a84f;
+    }
+
+    h1 {
+        color: #fff;
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -.02em;
+        margin: .5rem 0 .75rem;
+
+        em {
+            font-style: normal;
+            color: #d9a84f;
+        }
+    }
+
+    p {
+        color: rgba(233, 237, 245, .8);
+        font-size: 1.05rem;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------- navbar on small screens
+
+@media (max-width: 991.98px) {
+    .oa-app .main-header.oa-navbar {
+        > .container {
+            flex-wrap: nowrap;
+        }
+
+        .navbar-collapse {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            padding: .5rem 1rem 1rem;
+            background: var(--oa-navy);
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .brand-text {
+            font-size: .8rem;
+        }
+
+        .user-menu > .nav-link > span {
+            display: none;
+        }
+
+        .user-menu > .nav-link::before {
+            content: '\f2bd';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+        }
+    }
+}
+
+// ---------------------------------------------------------------- dark mode accents
+
+.oa-app.dark-mode .oa-tabs .is-active {
+    background: var(--oa-brass) !important;
+    color: var(--oa-on-brass) !important;
+}

@@ -2,40 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Auction;
+use App\Services\AuctionLifecycle;
+use Illuminate\Contracts\View\View;
 
 class HomeController extends Controller
 {
-    
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * The bidder's home: terms, then auctions by status.
      */
-    public function index()
+    public function index(): View
     {
-
         return view('home');
     }
 
-    public function welcome() {
-        $auctions =  Auction::where('end', '>=', date('Y-m-d', strtotime('-2 days'))) // Auctions that ended in the last 2 days  up to latest
-            ->whereNotNull('status')
-            ->orderBy('start', 'ASC')
-            ->orderBy('start_time', 'ASC')
+    public function welcome(AuctionLifecycle $lifecycle): View
+    {
+        $lifecycle->syncIfDue();
+
+        $open = Auction::query()
+            ->where('status', Auction::STATUS_OPEN)
+            ->whereHas('item')
+            ->with('item.pictures')
+            ->orderBy('end')
+            ->orderBy('end_time')
             ->limit(6)
             ->get();
 
-        $status_arr = [
-            'OPEN' => 'success',
-            'UPCOMING' => 'warning',
-            'ENDED' => 'danger'
-        ];
+        $upcoming = Auction::query()
+            ->where('status', Auction::STATUS_UPCOMING)
+            ->whereHas('item')
+            ->with('item.pictures')
+            ->orderBy('start')
+            ->orderBy('start_time')
+            ->limit(3)
+            ->get();
 
-        return view('welcome')->with([
-            'auctions' => $auctions,
-            'status_arr' => $status_arr
+        return view('welcome', [
+            'open' => $open,
+            'upcoming' => $upcoming,
         ]);
     }
 }

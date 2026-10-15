@@ -1,80 +1,76 @@
 @extends('layouts.app')
 
 {{-- Customize layout sections --}}
-@section('subtitle', 'BIDDING')
-@section('content_header_title', 'BIDDING')
-@section('content_header_subtitle', 'BIDDING DETAILS')
+@section('subtitle', 'My bids')
 
 {{-- Content body: main page content --}}
 @section('content_body')
-    <div class="card">
-        <div class="card-header py-2">
-            <div class="row">
-                <div class="col-lg-6 align-middle">
-                    <strong class="text-lg">MY BIDS</strong>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-
-            <div class="row">
-                <div class="col-12 table-responsive p-1 bg-gray rounded">
-                    <table class="table table-sm table-striped table-hover bg-white mb-0">
-                        <thead class="tex-center bg-dark">
-                            <tr class="text-center">
-                                <th>AUCTION</th>
-                                <th>ITEM</th>
-                                <th>BID AMOUNT</th>
-                                <th>BID TIMESTAMP</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($biddings as $bidding)
-                                <tr>
-                                    <td class="align-middle text-center">
-                                        {{$bidding->auction->auction_code}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{$bidding->auction->item->item_number ?? ''}}
-                                        {{$bidding->auction->item->name ?? ''}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{number_format($bidding->bid_amount, 2)}}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {{date('Y-m-d H:i:s a', strtotime($bidding->created_at))}}
-                                    </td>
-                                    <td class="align-middle text-right p-0 pr-1">
-                                        <a href="{{route('bidding.index', encrypt($bidding->auction_id))}}" class="btn btn-info btn-xs mb-0 ml-0">
-                                            <i class="fa fa-list"></i>
-                                            VIEW
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-        <div class="card-footer">
-            {{$biddings->links()}}
+<div class="pt-3">
+    <div class="oa-page-head">
+        <div>
+            <span class="oa-eyebrow">Bidding</span>
+            <h2>My bids</h2>
+            <p>Every bid you have placed, newest first.</p>
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-body p-0 table-responsive">
+            @if($biddings->isEmpty())
+                <div class="oa-empty">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <strong>You haven't placed any bids yet</strong>
+                    <span>Open auctions are listed on the <a href="{{ route('home') }}">Browse</a> page.</span>
+                </div>
+            @else
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Auction</th>
+                            <th>Item</th>
+                            <th class="text-right">Your bid</th>
+                            <th>Placed</th>
+                            <th>Result</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($biddings as $bidding)
+                            @php
+                                $auction = $bidding->auction;
+                                $winner = $auction?->auction_winner;
+                                $auctionStatus = $auction?->currentStatus();
+                            @endphp
+                            <tr>
+                                <td class="oa-num font-weight-bold">{{ $auction?->auction_code }}</td>
+                                <td>{{ $auction?->item?->name }} <span class="text-muted small d-block">{{ $auction?->item?->item_number }}</span></td>
+                                <td class="text-right oa-num font-weight-bold">{{ number_format((float) $bidding->bid_amount, 2) }}</td>
+                                <td class="text-nowrap">{{ $bidding->created_at->format('M j, Y g:i A') }}</td>
+                                <td>
+                                    @if($auctionStatus !== \App\Models\Auction::STATUS_ENDED)
+                                        <span class="oa-pill is-{{ strtolower((string) $auctionStatus) }}">{{ ucfirst(strtolower((string) $auctionStatus)) }}</span>
+                                    @elseif($winner && $winner->bidding_id === $bidding->id && $winner->status !== \App\Models\AuctionWinner::STATUS_FORFEITED)
+                                        <span class="oa-pill is-leading">Won · {{ $winner->statusLabel() }}</span>
+                                    @else
+                                        <span class="oa-pill">Not won</span>
+                                    @endif
+                                </td>
+                                <td class="text-right">
+                                    @if($auction)
+                                        <a href="{{ route('bidding.index', encrypt($bidding->auction_id)) }}" class="btn btn-outline-secondary btn-xs">View</a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+        @if($biddings->hasPages())
+            <div class="card-footer">
+                {{ $biddings->links() }}
+            </div>
+        @endif
+    </div>
+</div>
 @stop
-
-{{-- Push extra CSS --}}
-@push('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Push extra scripts --}}
-@push('js')
-    <script>
-        $(function() {
-        });
-    </script>
-@endpush

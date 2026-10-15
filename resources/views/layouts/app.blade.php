@@ -11,11 +11,11 @@
 
 @section('content_header')
     @hasSection('content_header_title')
-        <h1 class="text-light">
+        <h1>
             @yield('content_header_title')
 
             @hasSection('content_header_subtitle')
-                <small class="text-light">
+                <small>
                     <i class="fas fa-xs fa-angle-right"></i>
                     @yield('content_header_subtitle')
                 </small>
@@ -29,6 +29,12 @@
 @section('content')
     @yield('content_body')
 
+    {{-- Flash messages are shown as toasts by resources/js/app.js --}}
+    @if(session()->has('message_success') || session()->has('message_error'))
+        <div id="oa-flash" hidden
+             data-success="{{ session('message_success') }}"
+             data-error="{{ session('message_error') }}"></div>
+    @endif
 
     <!-- DELETE MODAL -->
     <div class="modal fade" id="modal-delete">
@@ -64,10 +70,6 @@
 @push('js')
 <script>
 
-    $(document).ready(function() {
-        // Add your common script logic here...
-    });
-
     $(document).on('click', '[data-toggle="lightbox"]', function(event) {
         event.preventDefault();
         $(this).ekkoLightbox({
@@ -78,18 +80,8 @@
 </script>
 @endpush
 
-{{-- Add common CSS customizations --}}
+{{-- Design layer, toasts and countdowns (Vite) --}}
 
-@push('css')
-<style type="text/css">
-
-    .content-wrapper {
-        background-image:url('/assets/images/bid.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        width: 100%;
-    }
-
-</style>
-@endpush
+@prepend('css')
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+@endprepend

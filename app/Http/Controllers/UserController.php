@@ -19,7 +19,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('created_at', 'DESC')
+        $users = User::with(['company', 'roles'])
+            ->orderBy('created_at', 'DESC')
             ->paginate(10)->appends(request()->query());
 
         return view('pages.users.index')->with([
