@@ -28,24 +28,6 @@
     <div class="content">
         <div class="{{ config('adminlte.classes_content') ?: $def_container_class }}">
             
-            {{-- SUCCESS MESSAGE --}}
-            @if(session()->has('message_success'))
-                <div class="alert alert-success" role="alert">
-                    <i class="fa fa-check mr-1"></i> Success!
-                    <br>
-                    {{session('message_success')}}
-                </div>
-            @endif
-
-            {{-- ERROR MESSAGE --}}
-            @if(session()->has('message_error'))
-                <div class="alert alert-danger" role="alert">
-                    <i class="fa fa-exclamation mr-1"></i> Error!
-                    <br>
-                    {{session('message_error')}}
-                </div>
-            @endif
-
             @stack('content')
             @yield('content')
         </div>

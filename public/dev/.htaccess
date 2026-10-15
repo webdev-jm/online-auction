@@ -1,0 +1,10 @@
+# Developer documentation: readable on the local machine only.
+# Remove or change this rule deliberately if the docs must be reachable elsewhere.
+<IfModule mod_authz_core.c>
+    Require local
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+    Allow from 127.0.0.1 ::1
+</IfModule>

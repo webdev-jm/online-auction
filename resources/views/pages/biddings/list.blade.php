@@ -1,75 +1,54 @@
 @extends('layouts.app')
 
 {{-- Customize layout sections --}}
-@section('subtitle', 'BIDDERS')
-@section('content_header_title', 'BIDDERS')
-@section('content_header_subtitle', 'BIDDERS LIST')
+@section('subtitle', 'Bidders · '.$auction->auction_code)
 
 {{-- Content body: main page content --}}
 @section('content_body')
-
-<div class="row mb-2">
-    <div class="col-lg-6">
-        <a href="{{route('bidding.index', encrypt($auction->id))}}" class="btn btn-secondary btn-sm">
-            <i class="fa fa-home"></i>
-            BACK
-        </a>
+<div class="pt-3">
+    <div class="oa-page-head">
+        <div>
+            <a href="{{ route('bidding.index', encrypt($auction->id)) }}" class="small font-weight-bold"><i class="fas fa-arrow-left mr-1"></i> Back to the auction</a>
+            <h2 class="mt-2">Bidders</h2>
+            <p>{{ $auction->auction_code }} · highest bid first, earliest first on a tie.</p>
+        </div>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-12 table-responsive p-1 bg-gray rounded">
-                <table class="table table-sm table-striped table-hover bg-white mb-0">
-                    <thead class="text-center bg-dark">
-                        <tr class="text-center">
-                            <th>USER</th>
-                            <th>BID AMOUNT</th>
-                            <th>TIMESTAMP</th>
+    <div class="card">
+        <div class="card-body p-0 table-responsive">
+            @if($bidders->isEmpty())
+                <div class="oa-empty">
+                    <i class="fas fa-users"></i>
+                    <strong>No bids yet</strong>
+                </div>
+            @else
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Bidder</th>
+                            <th class="text-right">Bid</th>
+                            <th>Placed</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($bidders as $bid)
                             <tr>
-                                <td class="align-middle text-center">
-                                    {{$bid->user->name}}
-                                </td>
-                                <td class="align-middle text-center">
-                                    {{number_format($bid->bid_amount, 2)}}
-                                </td>
-                                <td class="align-middle text-center">
-                                    {{$bid->created_at}}
-                                </td>
+                                <td class="text-muted oa-num">{{ $bidders->firstItem() + $loop->index }}</td>
+                                <td class="font-weight-bold">{{ $bid->user?->name }}</td>
+                                <td class="text-right oa-num font-weight-bold">{{ number_format((float) $bid->bid_amount, 2) }}</td>
+                                <td>{{ $bid->created_at->format('M j, Y g:i:s A') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+            @endif
         </div>
-    </div>
-    <div class="card-footer">
-        {{$bidders->links()}}
+        @if($bidders->hasPages())
+            <div class="card-footer">
+                {{ $bidders->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @stop
-
-{{-- Push extra CSS --}}
-@push('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Push extra scripts --}}
-@push('js')
-    <script>
-        $(function() {
-            $('.product-image-thumb').on('click', function () {
-                var $image_element = $(this).find('img')
-                $('.product-image').prop('src', $image_element.attr('src'))
-                $('.product-image-thumb.active').removeClass('active')
-                $(this).addClass('active')
-            });
-        });
-    </script>
-@endpush

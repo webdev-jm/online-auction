@@ -22,7 +22,7 @@ class Item extends Model
     }
 
     public function pictures() {
-        return $this->hasMany('App\Models\ItemPicture');
+        return $this->hasMany('App\Models\ItemPicture')->orderBy('id');
     }
 
     public function auctions() {

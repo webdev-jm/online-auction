@@ -20,4 +20,12 @@ class ItemPicture extends Model
     public function item() {
         return $this->belongsTo('App\Models\Item');
     }
+
+    /**
+     * Public URL of one of the saved sizes: "large" (800x700 max) or "small" (100x100).
+     */
+    public function url(string $size = 'large'): string
+    {
+        return asset($this->path.'/'.$size.'.jpg');
+    }
 }

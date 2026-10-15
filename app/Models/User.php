@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\AuctionSettings;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
@@ -30,6 +32,8 @@ class User extends Authenticatable
         'google_id',
         'hub_user_id',
         'accepts_terms_and_conditions',
+        'accepted_terms_version',
+        'dark_mode',
     ];
 
     /**
@@ -50,9 +54,27 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'accepted_terms_version' => 'integer',
+        'dark_mode' => 'boolean',
     ];
 
     public function company() {
         return $this->belongsTo('App\Models\Company');
+    }
+
+    public function biddings(): HasMany
+    {
+        return $this->hasMany(Bidding::class);
+    }
+
+    public function hasAcceptedCurrentTerms(): bool
+    {
+        return (int) $this->accepts_terms_and_conditions === 1
+            && (int) $this->accepted_terms_version >= (int) app(AuctionSettings::class)->get('terms_version');
+    }
+
+    public function hasDeclinedTerms(): bool
+    {
+        return (int) $this->accepts_terms_and_conditions === 2;
     }
 }

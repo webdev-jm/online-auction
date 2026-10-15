@@ -5,7 +5,8 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\{
     RoleController, UserController, CompanyController,
     SystemLogController, ItemController, AuctionController,
-    BiddingController, HomeController
+    BiddingController, HomeController, AuctionSettingController,
+    DashboardController
 };
 
 /*
@@ -100,6 +101,15 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::get('user/{id}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('permission:user edit');
         Route::post('user/{id}', [UserController::class, 'update'])->name('user.update')->middleware('permission:user edit');
+    });
+
+    // DASHBOARD ROUTE
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:auction access');
+
+    // AUCTION SETTINGS ROUTES
+    Route::group(['middleware' => 'permission:settings manage'], function() {
+        Route::get('settings/auction', [AuctionSettingController::class, 'edit'])->name('settings.auction');
+        Route::post('settings/auction', [AuctionSettingController::class, 'update'])->name('settings.auction.update');
     });
 
     // SYSTEM LOG ROUTES

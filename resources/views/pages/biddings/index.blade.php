@@ -1,121 +1,102 @@
 @extends('layouts.app')
 
 {{-- Customize layout sections --}}
-@section('subtitle', 'BIDDING')
-@section('content_header_title', 'BIDDING')
-@section('content_header_subtitle', 'BIDDING DETAILS')
+@section('subtitle', $auction->auction_code)
 
 {{-- Content body: main page content --}}
 @section('content_body')
+@php
+    $pictures = $item->pictures;
+    $firstPicture = $pictures->first();
+    $status = $auction->currentStatus();
+@endphp
 
-<div class="row mb-2">
-    <div class="col-lg-6">
-        <a href="{{route('home')}}" class="btn btn-primary btn-sm">
-            <i class="fa fa-home"></i>
-            BACK TO HOME
-        </a>
-    </div>
-    <div class="col-lg-6 text-right">
+<div class="pt-3">
+    <div class="oa-page-head">
+        <div>
+            <a href="{{ route('home') }}" class="small font-weight-bold"><i class="fas fa-arrow-left mr-1"></i> All auctions</a>
+            <h2 class="mt-2">{{ $item->name }}</h2>
+            <p>
+                <span class="oa-num">{{ $auction->auction_code }}</span>
+                · <span class="oa-pill is-{{ strtolower($status) }}">{{ ucfirst(strtolower($status)) }}</span>
+            </p>
+        </div>
         @if(auth()->user()->can('bidding list') || $auction->show_bidders)
-            <a href="{{route('bidding.list', encrypt($auction->id))}}" class="btn btn-info btn-sm">
-                <i class="fa fa-list"></i>
-                BIDDERS
-            </a>
+            <div class="oa-toolbar">
+                <a href="{{ route('bidding.list', encrypt($auction->id)) }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-list mr-1"></i> Bidders
+                </a>
+            </div>
         @endif
     </div>
-</div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-12 col-sm-6">
-                <h3 class="d-inline-block d-sm-none">{{$item->name}}</h3>
-                <div class="col-12">
-                    @php
-                        $first_picture = $item->pictures()->first();
-                    @endphp
-                    <img src="{{asset($first_picture->path).'/large.jpg'}}" class="product-image" alt="Product Image">
-                </div>
-                <div class="col-12 product-image-thumbs">
-                    @foreach($item->pictures as $picture)
-                        <div class="product-image-thumb{{$first_picture->id == $picture->id ? ' active' : ''}}">
-                            <img src="{{asset($picture->path).'/large.jpg'}}" alt="Product Image">
+    <div class="row">
+        <div class="col-lg-7 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="oa-gallery">
+                        <div class="oa-gallery-main">
+                            @if($firstPicture)
+                                <img src="{{ $firstPicture->url('large') }}" alt="{{ $firstPicture->title }}">
+                            @else
+                                <div class="oa-placeholder-img" aria-hidden="true"><i class="fas fa-box-open"></i></div>
+                            @endif
                         </div>
-                    @endforeach
+                        @if($pictures->count() > 1)
+                            <div class="oa-gallery-thumbs" aria-label="More photos">
+                                @foreach($pictures as $picture)
+                                    <button type="button" class="{{ $loop->first ? 'is-active' : '' }}"
+                                            data-gallery-thumb="{{ $picture->url('large') }}" data-gallery-alt="{{ $picture->title }}"
+                                            aria-label="Show photo {{ $loop->iteration }}">
+                                        <img src="{{ $picture->url('small') }}" alt="">
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
-            <div class="col-12 col-sm-6">
-                <h3 class="mt-3">AUCTION CODE: <span class="badge badge-primary text-lg pt-1">{{$auction->auction_code}}</span></h3>
-                <ul class="list-group">
-                    <li class="list-group-item py-1">
-                        <b>
-                            START:
-                        </b>
-                        <span class="float-right">
-                            {{$auction->start}} {{$auction->start_time}}
-                        </span>
-                    </li>
-                    <li class="list-group-item py-1">
-                        <b>
-                            END:
-                        </b>
-                        <span class="float-right">
-                            {{$auction->end}} {{$auction->end_time}}
-                        </span>
-                    </li>
-                    <li class="list-group-item py-1">
-                        <b>
-                            MINIMUM BID:
-                        </b>
-                        <span class="float-right">
-                            {{number_format($auction->min_bid, 2)}}
-                        </span>
-                    </li>
-                </ul>
 
-                <hr>
-                <h4>ITEM DETAILS</h4>
-                <h3 class="mt-3">[{{$item->item_number}}] {{$item->name}}</h3>
-                <p>{{$item->brand}}</p>
-
-                <hr>
-                <h4>SPECIFICATIONS</h4>
-                <ul class="list-group">
-                    @foreach($item->specifications as $specification)
-                        <li class="list-group-item py-1">
-                            <b>
-                                {{$specification->specification}}:
-                            </b>
-                            <span class="float-right">
-                                {{$specification->value}}
-                            </span>
-                        </li>
-                    @endforeach
-                </ul>
-
-                <livewire:biddings.bid :auction="$auction"/>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Item details</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="oa-specs">
+                        <dt>Item number</dt>
+                        <dd class="oa-num">{{ $item->item_number }}</dd>
+                        @if($item->brand)
+                            <dt>Brand</dt>
+                            <dd>{{ $item->brand }}</dd>
+                        @endif
+                        <dt>Bidding opens</dt>
+                        <dd>{{ $auction->startsAt()->format('M j, Y g:i A') }}</dd>
+                        <dt>Bidding closes</dt>
+                        <dd>{{ $auction->endsAt()->format('M j, Y g:i A') }}</dd>
+                        @foreach($item->specifications as $specification)
+                            @if(filled($specification->value))
+                                <dt>{{ $specification->specification }}</dt>
+                                <dd>{{ $specification->value }}</dd>
+                            @endif
+                        @endforeach
+                    </dl>
+                </div>
             </div>
+        </div>
+
+        <div class="col-lg-5 mb-3">
+            <livewire:biddings.bid :auction="$auction"/>
         </div>
     </div>
 </div>
+
+<div class="oa-drawer" id="mechanics-drawer" hidden>
+    <div class="oa-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="mechanics-title">
+        <div class="oa-drawer-head">
+            <h3 id="mechanics-title" class="mb-0">Auction mechanics</h3>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-drawer-close>Close</button>
+        </div>
+        <div class="oa-terms">{!! $termsHtml !!}</div>
+    </div>
+</div>
 @stop
-
-{{-- Push extra CSS --}}
-@push('css')
-    {{-- Add here extra stylesheets --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Push extra scripts --}}
-@push('js')
-    <script>
-        $(function() {
-            $('.product-image-thumb').on('click', function () {
-                var $image_element = $(this).find('img')
-                $('.product-image').prop('src', $image_element.attr('src'))
-                $('.product-image-thumb.active').removeClass('active')
-                $(this).addClass('active')
-            });
-        });
-    </script>
-@endpush
